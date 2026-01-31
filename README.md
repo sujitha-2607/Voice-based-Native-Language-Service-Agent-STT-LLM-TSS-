@@ -1,67 +1,121 @@
-# Voice-Based Native Language Welfare Scheme Agent
+# Voice-Based Government Services Agent 
 
-##  Overview
-This project implements a **voice-first, agentic AI system** that helps users identify and apply for **government/public welfare schemes** based on their eligibility.  
-The agent operates **end-to-end in a native Indian language** (non-English) and demonstrates **reasoning, planning, tool usage, memory, and failure handling**, going beyond a simple chatbot.
+##  Project Overview
 
-The system supports:
-- Voice input (Speech-to-Text)
-- Agentic decision-making
-- Eligibility checking using tools
-- Conversation memory across turns
-- Voice output (Text-to-Speech)
-- Graceful handling of incomplete or incorrect inputs
+This project is a **voice-based government services assistant** that helps users discover **government jobs** and **government welfare schemes** based on eligibility.  
+The system works **entirely in Telugu**, supporting **voice input and voice output**, and follows a **hybrid agentic architecture** combining **Generative AI (Gemini)** with **rule-based tools** to ensure correctness and reliability.
+
+This approach avoids hallucinations and reflects how **real-world government AI systems** are designed.
 
 ---
 
-##  Objective
-To build a **native-language service agent** that can:
-- Understand user requests via voice
-- Determine eligibility for welfare schemes
-- Ask follow-up questions when information is missing
-- Maintain context across multiple interactions
-- Respond back using voice output
+##  Key Features
+
+-  Telugu **Voice Input** (Speech-to-Text)
+-  Telugu **Voice Output** (Text-to-Speech)
+-  **Gemini LLM** for intent detection (Job / Scheme)
+-  Agentic workflow (Listen → Reason → Act → Respond)
+-  Multiple tools for jobs and schemes
+-  Intelligent fallback for other locations/departments
+-  Conversation memory
+-  Speech failure recovery
 
 ---
 
-##  Agent Architecture
-The system follows an **agentic workflow**:
+## System Architecture (High Level)
+User (Telugu Voice)
+        ↓
+Speech-to-Text (STT)
+        ↓
+Intent Detection (Gemini API)
+        ↓
+Agent Controller (main.py)
+        ↓
+Tools Layer
+  ├─ Job Eligibility Tool
+  └─ Scheme Eligibility Tool
+        ↓
+Response Builder (Telugu)
+        ↓
+Text-to-Speech (TTS)
+        ↓
+User (Telugu Voice)
 
-1. **Input Layer**  
-   - User speaks in a native Indian language
-   - Speech converted to text (STT)
+- **LISTEN**: Capture Telugu voice input  
+- **REASON**: Identify intent using Gemini  
+- **ACT**: Invoke job or scheme tools  
+- **RESPOND**: Speak results in Telugu  
 
-2. **Agent Reasoning Layer**
-   - Planner: decides next action
-   - Executor: calls tools (eligibility checks, retrieval)
-   - Evaluator: verifies responses and handles failures
+---
 
-3. **Tools Layer**
-   - Eligibility Engine
-   - External / mock APIs
-   - Utility tools
+##  Tools and APIs Used
 
-4. **Memory Layer**
-   - Stores conversation history
-   - Handles contradictions and follow-ups
+###  Gemini API
+- Used **only for intent detection**
+- Identifies whether the user wants:
+  - Government jobs
+  - Government schemes
+- Not used for factual data (prevents hallucination)
 
-5. **Output Layer**
-   - Generates native-language response
-   - Converts text back to speech (TTS)
+###  Speech-to-Text (STT)
+- Converts Telugu voice to text
+- Retries when speech is unclear
+
+###  Text-to-Speech (TTS)
+- Converts Telugu text to Telugu voice
+- Used for all responses
+
+###  Rule-Based Tools
+- Job eligibility engine
+- Scheme eligibility engine
+- Operates on mock government datasets
+
+---
+
+##  Project Structure
 
 
+└── Agent
+    ├── main.py        # Agent controller & workflow
+    ├── speech.py      # Speech-to-text and text-to-speech
+    ├── tools.py       # Job & scheme eligibility logic
+    ├── gemini.py      # Gemini intent detection
+    ├── memory.py      # Conversation memory
+    └── README.md      # Project documentation
 
-## Project Structure
 
-├── README.md               # Project documentation
-├── main.py                 # Entry point for the application
-├── agent.py                # Core agent logic (planning, execution)
-├── config.py               # Configuration and constants
-├── eligibility.py          # Eligibility checking logic for schemes
-├── memory.py               # Conversation memory management
-├── speech.py               # Speech-to-Text and Text-to-Speech pipeline
-├── tools.py                # Tools used by the agent
-└── test_google_stt.py      # Test file for Google STT integration
+---
+
+##  File Descriptions
+
+### `main.py`
+- Central agent controller
+- Manages conversation flow
+- Calls Gemini and tools
+- Handles fallback and errors
+- Maps Telugu inputs to internal values
+
+### `speech.py`
+- Handles Telugu voice input (STT)
+- Handles Telugu voice output (TTS)
+- Includes retry logic for speech failures
+
+### `gemini.py`
+- Integrates Gemini API
+- Performs **only intent classification**
+- Returns `job` or `scheme`
+
+### `tools.py`
+- Contains rule-based eligibility logic
+- **Jobs Tool**
+  - Filters government jobs by education, department, and location
+  - Suggests other locations/departments if needed
+- **Schemes Tool**
+  - Determines eligibility using age, education, and gender
+
+### `memory.py`
+- Stores user information across turns
+- Enables multi-step conversations
 
 
 ##  Demo Video
